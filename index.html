@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en" class="js-loading">
+  <head>
+    <script>
+      (function () {
+        const img = new Image();
+        img.src = "/src/assets/images/tab_logo.png";
+        img.onload = function () {
+          const size = 64;
+          const canvas = document.createElement("canvas");
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext("2d");
+
+          // Clip to circle
+          ctx.beginPath();
+          ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+          ctx.closePath();
+          ctx.clip();
+
+          // Draw image inside circle
+          ctx.drawImage(img, 0, 0, size, size);
+
+          // Replace favicon
+          const link =
+            document.querySelector("link[rel='icon']") ||
+            document.createElement("link");
+          link.rel = "icon";
+          link.type = "image/png";
+          link.href = canvas.toDataURL("image/png");
+          document.head.appendChild(link);
+        };
+      })();
+    </script>
+    <!-- Anti-FOUC: must be first -->
+    <script>
+      document.documentElement.className = "js-loading";
+    </script>
+
+    <style id="anti-fouc">
+      html.js-loading {
+        background: #07070c !important;
+        visibility: hidden !important;
+      }
+      html.js-loaded {
+        visibility: visible !important;
+      }
+      html:not(.js-loaded):not(.js-loading) {
+        visibility: visible;
+      }
+    </style>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="MonetizeTeam – We build digital products for creators and split revenue 50/50"
+    />
+    <meta name="theme-color" content="#07070c" />
+
+    <title>MonetizeTeam – Build. Launch. Split.</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/src/assets/images/tab_logo.png" />
+
+    <!-- Preconnect to Google Fonts before the CSS @import fires -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Preload critical image -->
+    <link rel="preload" href="/src/assets/images/white.png" as="image" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

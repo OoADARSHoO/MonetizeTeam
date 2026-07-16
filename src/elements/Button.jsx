@@ -219,7 +219,7 @@ const VARIANT_CLASS = {
 export default function Button({
   variant = "default",
   label = "Book A Call",
-  href = "https://calendly.com/monetizeteam-business/30min",
+  href = "https://cal.com/monetize-team/book-a-call",
   onClick,
   style = {},
 }) {

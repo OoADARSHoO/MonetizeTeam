@@ -33,8 +33,7 @@ const INFO_CARDS = [
   },
 ];
 
-const GOOGLE_FORM_ACTION =
-  "https://docs.google.com/forms/d/e/1FAIpQLSffBiRpgPgTluWi1oiZjjN1mxapdEfIsYtOyBl5cf_EdS5Usw/formResponse";
+const WEB3FORMS_ACCESS_KEY = "73703dae-552f-40c6-a84b-8a62f53b9cfd";
 
 const EMPTY_FORM = { name: "", email: "", handle: "", message: "" };
 
@@ -310,19 +309,28 @@ export default function Contact() {
         alert("Please fill in all required fields.");
         return;
       }
-      const fd = new FormData();
-      fd.append("entry.1915139014", form.name);
-      fd.append("entry.1747355512", form.email);
-      fd.append("entry.1652709457", form.handle);
-      fd.append("entry.719818541", form.message);
       try {
-        await fetch(GOOGLE_FORM_ACTION, {
+        const response = await fetch("https://api.web3forms.com/submit", {
           method: "POST",
-          mode: "no-cors",
-          body: fd,
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            access_key: WEB3FORMS_ACCESS_KEY,
+            name: form.name,
+            email: form.email,
+            handle: form.handle,
+            message: form.message,
+          }),
         });
-        setSubmitted(true);
-        setForm(EMPTY_FORM);
+        const result = await response.json();
+        if (result.success) {
+          setSubmitted(true);
+          setForm(EMPTY_FORM);
+        } else {
+          alert(result.message || "Something went wrong. Please try again.");
+        }
       } catch (err) {
         console.error("Submission failed:", err);
         alert("Something went wrong. Please try again.");
@@ -369,7 +377,17 @@ export default function Contact() {
                 <div style={successTagStyle}>— MonetizeTeam</div>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} style={formStyle}>
+              <form
+                onSubmit={handleSubmit}
+                action="https://api.web3forms.com/submit"
+                method="POST"
+                style={formStyle}
+              >
+                <input
+                  type="hidden"
+                  name="access_key"
+                  value={WEB3FORMS_ACCESS_KEY}
+                />
                 {/* Name + Email row — rendered from FIELDS slice, no per-render field objects */}
                 <div className="name-email-row" style={nameEmailStyle}>
                   {FIELDS.slice(0, 2).map((f) => (
